@@ -1,0 +1,5 @@
+{
+  "name": "OptiConvert",
+  "description": "High-performance batch image converter to WebP and AVIF with real-time size estimation and Glassmorphism UI.",
+  "requestFramePermissions": []
+}

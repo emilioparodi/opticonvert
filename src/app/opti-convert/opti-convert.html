@@ -1,0 +1,224 @@
+<div class="min-h-screen flex flex-col transition-colors duration-500"
+     [class.dark]="isDarkMode()"
+     [class.bg-slate-50]="!isDarkMode()"
+     [class.bg-slate-950]="isDarkMode()">
+
+  <div class="window-drag-handle h-8 w-full shrink-0"></div>
+
+  <header class="h-20 flex items-center justify-between px-8 pl-24 border-b border-white/10 backdrop-blur-md sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-indigo-500/20 shrink-0">
+        <img src="logo-app.png" alt="OptiConvert Logo" class="w-full h-full object-contain">
+      </div>
+      <div class="flex flex-col justify-center">
+        <h1 class="text-xl font-bold tracking-tight"
+            [class.text-slate-900]="!isDarkMode()"
+            [class.text-white]="isDarkMode()">
+          OptiConvert
+        </h1>
+        <span class="text-[10px] font-bold uppercase tracking-widest -mt-0.5"
+              [class.text-slate-500]="!isDarkMode()"
+              [class.text-indigo-400]="isDarkMode()">
+          Web Image Converter
+        </span>
+      </div>
+    </div>
+
+    <button (click)="toggleTheme()"
+            class="p-2.5 rounded-xl transition-all duration-300 flex items-center justify-center border border-transparent hover:border-indigo-500/30"
+            [class.bg-slate-200]="!isDarkMode()"
+            [class.text-slate-900]="!isDarkMode()"
+            [class.bg-white/10]="isDarkMode()"
+            [class.text-amber-400]="isDarkMode()"
+            [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+      <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+  </header>
+
+  <main class="flex-1 flex overflow-hidden p-6 gap-6">
+    <aside class="w-80 flex flex-col gap-6">
+      <div class="glass-card p-6 flex flex-col gap-6">
+        <h2 class="text-xs font-semibold uppercase tracking-wider opacity-60"
+            [class.text-slate-900]="!isDarkMode()"
+            [class.text-slate-100]="isDarkMode()">Settings</h2>
+
+        <div class="flex flex-col gap-3">
+          <span class="text-sm font-medium"
+                [class.text-slate-900]="!isDarkMode()"
+                [class.text-slate-100]="isDarkMode()">Output Format</span>
+          <div class="flex p-1 bg-black/10 dark:bg-black/40 rounded-lg">
+            <button (click)="format.set('webp')"
+                    class="flex-1 py-2 rounded-md text-sm font-medium transition-all"
+                    [class.bg-white]="!isDarkMode() && format() === 'webp'"
+                    [class.bg-white/20]="isDarkMode() && format() === 'webp'"
+                    [class.text-white]="isDarkMode()"
+                    [class.text-slate-900]="!isDarkMode()">
+              WebP
+            </button>
+            <button (click)="format.set('avif')"
+                    class="flex-1 py-2 rounded-md text-sm font-medium transition-all"
+                    [class.bg-white]="!isDarkMode() && format() === 'avif'"
+                    [class.bg-white/20]="isDarkMode() && format() === 'avif'"
+                    [class.text-white]="isDarkMode()"
+                    [class.text-slate-900]="!isDarkMode()">
+              AVIF
+            </button>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <div class="flex justify-between items-center">
+            <label for="quality-slider" class="text-sm font-medium"
+                   [class.text-slate-900]="!isDarkMode()"
+                   [class.text-slate-100]="isDarkMode()">Quality</label>
+            <span class="text-xs font-mono font-bold"
+                  [class.text-slate-600]="!isDarkMode()"
+                  [class.text-indigo-400]="isDarkMode()">{{ quality() }}%</span>
+          </div>
+          <input id="quality-slider" type="range" min="1" max="100" [ngModel]="quality()" (ngModelChange)="quality.set($event)"
+                 class="w-full h-1.5 bg-black/10 dark:bg-black/40 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+          <p class="text-[10px] opacity-60 leading-tight"
+             [class.text-slate-600]="!isDarkMode()"
+             [class.text-slate-300]="isDarkMode()">
+            Lower quality results in smaller file sizes but may introduce artifacts.
+          </p>
+        </div>
+
+        <div class="h-px bg-black/5 dark:bg-white/10"></div>
+
+        <div class="flex flex-col gap-2">
+          <span class="text-sm font-medium"
+                [class.text-slate-900]="!isDarkMode()"
+                [class.text-slate-100]="isDarkMode()">Estimated Output</span>
+          <div class="flex items-baseline gap-1">
+            <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{{ formatSize(totalEstimatedSize()) }}</span>
+            <span class="text-xs opacity-60"
+                  [class.text-slate-900]="!isDarkMode()"
+                  [class.text-slate-100]="isDarkMode()">total</span>
+          </div>
+        </div>
+
+        <button (click)="convertAll()"
+                [disabled]="files().length === 0"
+                class="mt-4 w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold shadow-lg shadow-indigo-600/20 transition-all flex items-center justify-center gap-2">
+          Convert
+        </button>
+      </div>
+    </aside>
+
+    <section class="flex-1 flex flex-col gap-6 overflow-hidden">
+      <div (dragover)="onDragOver($event)"
+           (dragleave)="onDragLeave($event)"
+           (drop)="onDrop($event)"
+           tabindex="0"
+           (keydown.enter)="fileInput.click()"
+           (keydown.space)="fileInput.click()"
+           class="relative h-44 shrink-0 rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center gap-3 cursor-pointer group"
+           [class.border-indigo-500]="isDragging()"
+           [class.bg-indigo-500/5]="isDragging()"
+           [class.border-white/20]="!isDragging() && isDarkMode()"
+           [class.border-black/10]="!isDragging() && !isDarkMode()"
+           (click)="fileInput.click()">
+
+        <input #fileInput type="file" multiple (change)="onFileSelected($event)" class="hidden" accept="image/*">
+
+        <div class="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+          <mat-icon class="text-indigo-500">cloud_upload</mat-icon>
+        </div>
+        <div class="text-center">
+          <p class="font-medium"
+             [class.text-slate-900]="!isDarkMode()"
+             [class.text-slate-100]="isDarkMode()">Drag & Drop images here</p>
+          <p class="text-xs opacity-60"
+             [class.text-slate-600]="!isDarkMode()"
+             [class.text-slate-400]="isDarkMode()">or click to browse files</p>
+        </div>
+
+        @if (isDragging()) {
+          <div class="absolute inset-0 rounded-2xl bg-indigo-500/10 animate-pulse"></div>
+        }
+      </div>
+
+      <div class="flex-1 glass-card overflow-hidden flex flex-col min-h-0">
+        <div class="p-4 border-b border-black/5 dark:border-white/10 flex justify-between items-center bg-black/5 dark:bg-white/5">
+          <h3 class="text-xs font-bold uppercase tracking-widest opacity-60"
+              [class.text-slate-900]="!isDarkMode()"
+              [class.text-slate-100]="isDarkMode()">Batch Queue</h3>
+          <span class="text-xs px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10"
+                [class.text-slate-900]="!isDarkMode()"
+                [class.text-slate-100]="isDarkMode()">{{ files().length }} files</span>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-4 flex flex-col gap-2 custom-scroll">
+          @for (item of files(); track item.id) {
+            <div class="file-item group flex items-center gap-4 p-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-all border border-transparent hover:border-black/10 dark:hover:border-white/10">
+              <div class="w-10 h-10 rounded-lg bg-black/10 dark:bg-black/40 flex items-center justify-center overflow-hidden">
+                @if (item.status === 'done' && item.convertedUrl) {
+                  <img [src]="item.convertedUrl" class="w-full h-full object-cover" referrerpolicy="no-referrer" [alt]="item.name">
+                } @else {
+                  <mat-icon class="opacity-30"
+                            [class.text-slate-900]="!isDarkMode()"
+                            [class.text-slate-100]="isDarkMode()">image</mat-icon>
+                }
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium truncate"
+                   [class.text-slate-900]="!isDarkMode()"
+                   [class.text-slate-100]="isDarkMode()">{{ item.name }}</p>
+                <div class="flex items-center gap-2 text-[10px] font-medium">
+                  <span class="opacity-60"
+                        [class.text-slate-600]="!isDarkMode()"
+                        [class.text-slate-400]="isDarkMode()">{{ formatSize(item.originalSize) }}</span>
+                  @if (item.convertedSize) {
+                    <mat-icon class="text-[10px] w-auto h-auto opacity-40">arrow_forward</mat-icon>
+                    <span class="text-emerald-600 dark:text-emerald-400 font-bold">{{ formatSize(item.convertedSize) }}</span>
+                  }
+                </div>
+              </div>
+
+              <div class="flex items-center gap-3">
+                @switch (item.status) {
+                  @case ('pending') {
+                    <span class="text-[10px] font-bold uppercase text-amber-600 dark:text-amber-400">Pending</span>
+                  }
+                  @case ('processing') {
+                    <div class="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                  }
+                  @case ('done') {
+                    <mat-icon class="text-emerald-500">check_circle</mat-icon>
+                  }
+                  @case ('error') {
+                    <mat-icon class="text-rose-600 dark:text-rose-400">error_outline</mat-icon>
+                  }
+                }
+
+                <button (click)="removeFile(item.id)"
+                        class="p-2 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                        [class.bg-rose-500/10]="!isDarkMode()"
+                        [class.text-rose-600]="!isDarkMode()"
+                        [class.bg-rose-400/20]="isDarkMode()"
+                        [class.text-rose-400]="isDarkMode()">
+                  <mat-icon class="text-sm">delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="h-full flex flex-col items-center justify-center opacity-20 gap-4"
+                 [class.text-slate-900]="!isDarkMode()"
+                 [class.text-slate-100]="isDarkMode()">
+              <mat-icon class="text-6xl">inbox</mat-icon>
+              <p class="text-sm font-medium">Queue is empty</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="h-10 flex items-center justify-center px-8 border-t border-black/5 dark:border-white/10 text-[10px] opacity-60 tracking-wide"
+          [class.text-slate-600]="!isDarkMode()"
+          [class.text-slate-400]="isDarkMode()">
+    <p>Made with ❤️ by EP Dev | <a href="paypal.me/emilioparodism" class="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Support the developer ☕</a></p>
+  </footer>
+</div>

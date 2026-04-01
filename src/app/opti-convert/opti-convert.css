@@ -1,0 +1,115 @@
+@import "tailwindcss";
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+.window-drag-handle {
+  -webkit-app-region: drag;
+  height: 32px;
+  width: 100%;
+  background: transparent;
+}
+
+button, input, .dropzone, .file-item, mat-icon {
+  -webkit-app-region: no-drag;
+}
+
+.glass-card {
+  @apply transition-all duration-300;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.dark .glass-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+mat-icon {
+  @apply transition-colors duration-200;
+  color: #64748b;
+}
+
+.dark mat-icon {
+  color: #94a3b8;
+}
+
+.text-emerald-500, mat-icon[class*="emerald"] { color: #10b981 !important; }
+.text-rose-500, mat-icon[class*="rose"] { color: #f43f5e !important; }
+.text-amber-500, mat-icon[class*="amber"] { color: #f59e0b !important; }
+.text-indigo-500, mat-icon[class*="indigo"] { color: #6366f1 !important; }
+
+.file-item {
+  @apply flex items-center gap-4 p-3 rounded-xl transition-all border border-transparent;
+}
+
+.file-item:hover {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+.dark .file-item:hover {
+  background: #334155;
+  border-color: #475569;
+}
+
+.dropzone {
+  @apply transition-all duration-300 border-2 border-dashed;
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.dark .dropzone {
+  background: #0f172a;
+  border-color: #334155;
+}
+
+.dropzone:hover, .dropzone.dragging {
+  border-color: #6366f1 !important;
+  background: rgba(99, 102, 241, 0.05) !important;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  @apply h-2 w-full rounded-full bg-slate-200 dark:bg-slate-900;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  @apply h-5 w-5 rounded-full bg-indigo-600 cursor-pointer shadow-md -mt-1.5 border-2 border-white dark:border-slate-800;
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.dark .custom-scroll::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.animate-spin {
+  border-top-color: #6366f1 !important;
+}
+
+.dark img[alt="OptiConvert Logo"] {
+  filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.3));
+}
