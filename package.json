@@ -3,6 +3,11 @@
   "version": "1.0.0",
   "description": "Professional Web Image Converter",
   "author": "EP Dev <https://emiliparodi.dev>",
+  "homepage": "https://github.com/emilioparodi/opticonvert",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emilioparodi/opticonvert.git"
+  },
   "main": "main.js",
   "private": true,
   "scripts": {
